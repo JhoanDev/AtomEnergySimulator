@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import * as THREE from "../../node_modules/three/build/three.module.js";
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
