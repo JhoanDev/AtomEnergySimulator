@@ -53,6 +53,13 @@ class NuclearModel {
       }
     );
   }
+
+  rotate() {
+    if (this.model) {
+      this.model.rotation.x += 0.01; // Rotação ao longo do eixo X
+      this.model.rotation.y += 0.01; // Rotação ao longo do eixo Y
+    }
+  }
 }
 
 const nucleo = new NuclearModel();
