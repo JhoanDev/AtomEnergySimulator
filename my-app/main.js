@@ -21,7 +21,7 @@ controls.maxDistance = 10; // Distância máxima para o zoom
 controls.mouseButtons.RIGHT = null; // Desativar botão direito
 
 
-camera.position.set(10, 0, 0);
+camera.position.set(50, 0, 0);
 camera.lookAt(0, 0, 0);
 
 controls.update(); // Atualiza os controles
@@ -66,6 +66,8 @@ class Atom {
       gltf.scenes;
       gltf.cameras;
       gltf.asset;
+
+      object.model.scale.set(0.35, 0.35, 0.35);
     });
   }
 
@@ -119,31 +121,34 @@ class ValenceShell {
 
   // Método para adicionar o plano à cena
   addToScene(scene) {
-    const tamanho = 7 + ((this.layer - 1) * 1.5)
-    const geometry = new THREE.PlaneGeometry(10, 10); // Tamanho do plano
-    const material = new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide }); // Cor do plano
-    const plane = new THREE.Mesh(geometry, material); // Cria o plano
+    const raio = 4 + ((this.layer - 1) * 1.5); // Define o raio do anel com base na camada de valência
+    const tubeRadius = 0.07; // Raio da "espessura" da anel
+    const radialSegments = 30; // Segmentos ao redor do raio maior
+    const tubularSegments = 16; // Segmentos ao longo da espessura do tubo
+
+    // TorusGeometry cria uma geometria em formato de anel
+    const geometry = new THREE.TorusGeometry(raio, tubeRadius, tubularSegments, radialSegments);
+    const material = new THREE.MeshBasicMaterial({ color: 0x22ff99, side: THREE.DoubleSide }); // Material do anel
+    const anel = new THREE.Mesh(geometry, material); // Cria o mesh do anel
 
     // O plano deve ser definido pelos vetores ortogonais, então usaremos esses vetores para orientar o plano
-    plane.lookAt(this.planeNormal); // A face será perpendicular ao vetor normal
+    anel.lookAt(this.planeNormal); // A face será perpendicular ao vetor normal
 
     // Rotaciona o plano para alinhar com os vetores ortogonais
-    plane.rotateOnAxis(this.orthogonalVector1, Math.PI / 2); // Exemplo de rotação ao longo do primeiro vetor ortogonal
-    plane.rotateOnAxis(this.orthogonalVector2, Math.PI / 2); // Exemplo de rotação ao longo do segundo vetor ortogonal
+    anel.rotateOnAxis(this.orthogonalVector1, Math.PI / 2); //rotação ao longo do primeiro vetor ortogonal
+    anel.rotateOnAxis(this.orthogonalVector2, Math.PI / 2); //rotação ao longo do segundo vetor ortogonal
 
-    scene.add(plane);
+    scene.add(anel);
   }
 }
 
 const normalVector1 = { x: 1, y: 0.5, z: 0 }; // Vetor normal arbitrário
 const normalVector2 = { x: 0, y: 0.5, z: 1 }; // Vetor normal arbitrário
 
-const valenceShell1 = new ValenceShell(1, normalVector1); // Camada K, usando o vetor normal fornecido
-const valenceShell2 = new ValenceShell(2, normalVector2); // Camada l, usando o vetor normal fornecido
-
-valenceShell1.addToScene(scene);
-valenceShell2.addToScene(scene);
-
+const valenceShells = [
+  new ValenceShell(1, normalVector1),
+  new ValenceShell(2, normalVector2)
+];
 
 const neutrons = [
   new Atom("neutron"),
@@ -152,7 +157,15 @@ const neutrons = [
   new Atom("neutron"),
 ];
 
-const protons = [new Atom("proton"), new Atom("proton"), new Atom("proton")];
+const protons = [
+  new Atom("proton"),
+  new Atom("proton"),
+  new Atom("proton")
+];
+
+for (let shell of valenceShells) {
+  shell.addToScene(scene);
+}
 
 function animate() {
   controls.update();
