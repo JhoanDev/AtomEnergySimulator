@@ -66,8 +66,6 @@ class Atom {
       gltf.scenes;
       gltf.cameras;
       gltf.asset;
-
-      object.model.scale.set(0.35, 0.35, 0.35);
     });
   }
 
