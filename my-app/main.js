@@ -36,13 +36,9 @@ const normalVector1 = { x: 1, y: 0.5, z: 0 }; // Vetor normal arbitrário
 const normalVector2 = { x: 0, y: 0.5, z: 1 }; // Vetor normal arbitrário
 
 const valenceShells = [
-  new ValenceShell(scene, 1, normalVector1),
-  new ValenceShell(scene, 2, normalVector2),
+  new ValenceShell(scene, 1, normalVector1, 2),
+  new ValenceShell(scene, 2, normalVector2, 1),
 ];
-
-for (let shell of valenceShells) {
-  shell.addToScene(scene);
-}
 
 const core = new Core(scene, 3, 4);
 

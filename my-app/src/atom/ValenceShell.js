@@ -1,9 +1,12 @@
 import * as THREE from "three";
+import Electron from "./Electron";
+import { cos } from "three/webgpu";
 
 export default class ValenceShell {
-  constructor(scene, layer, normalVector) {
+  constructor(scene, layer, normalVector, quantidadeEletrons) {
     this.scene = scene; // Cena principal
     this.layer = layer; // Identifica a camada (1 - K, 2 - L, etc.)
+    this.quantidadeEletrons = quantidadeEletrons; // Quantidade de elétrons na camada
     this.planeNormal = new THREE.Vector3(
       normalVector.x,
       normalVector.y,
@@ -17,14 +20,18 @@ export default class ValenceShell {
 
     // Calcula os vetores ortogonais
     this.calculateOrthogonalVectors();
-
+    this.radius = 2 + (this.layer - 1) * 1.2; // Define o raio do anel com base na camada de valência
     this.ring; // Anel da camada
- 
+
     console.log(`Normal do plano: ${this.planeNormal.x}, ${this.planeNormal.y}, ${this.planeNormal.z}`);
     console.log(`Vetor ortogonal 1: ${this.orthogonalVector1.x}, ${this.orthogonalVector1.y}, ${this.orthogonalVector1.z}`);
     console.log(`Vetor ortogonal 2: ${this.orthogonalVector2.x}, ${this.orthogonalVector2.y}, ${this.orthogonalVector2.z}`);
+    this.addToScene(); // Adiciona o anel à cena
+    this.eletrons = [];
+    this.addElectrons(); // Adiciona os elétrons à camada
   }
 
+  // Método para calcular os vetores ortogonais
   calculateOrthogonalVectors() {
     // Vetor arbitrário para o produto vetorial
     let arbitraryVector = new THREE.Vector3(1, 0, 0);
@@ -53,14 +60,13 @@ export default class ValenceShell {
 
   // Método para adicionar o plano à cena
   addToScene() {
-    const radius = 4 + (this.layer - 1) * 1.5; // Define o raio do anel com base na camada de valência
     const tubeRadius = 0.07; // Raio da "espessura" da anel
     const radialSegments = 30; // Segmentos ao redor do raio maior
     const tubularSegments = 16; // Segmentos ao longo da espessura do tubo
 
     // TorusGeometry cria uma geometria em formato de anel
     const geometry = new THREE.TorusGeometry(
-      radius,
+      this.radius,
       tubeRadius,
       tubularSegments,
       radialSegments
@@ -81,4 +87,25 @@ export default class ValenceShell {
 
     this.scene.add(this.ring);
   }
+
+  addElectrons() {
+    console.log(`Adicionando elétrons na camada ${this.layer}`);
+    console.log('ring position', this.ring.position);
+    for (let i = 0; i < this.quantidadeEletrons; i++) {
+      console.log(`Adicionando elétron ${i + 1}`);
+      const angle = (i * Math.PI * 2) / this.quantidadeEletrons;
+      const electron = new Electron(this.scene, this);
+      electron.angle = angle; // Armazena o ângulo
+      this.eletrons.push(electron);
+
+      const x = (this.radius * Math.cos(angle)) 
+      const y = (this.radius * Math.sin(angle))
+      const z = 0;
+      const position = new THREE.Vector3(x, y, z);
+    
+      electron.setPosition(position);
+    }
+  } 
+
+
 }
