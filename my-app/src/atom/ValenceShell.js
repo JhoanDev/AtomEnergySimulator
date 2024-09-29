@@ -2,7 +2,7 @@ import * as THREE from "three";
 
 export default class ValenceShell {
   constructor(scene, layer, normalVector) {
-    this.scene = scene;
+    this.scene = scene; // Cena principal
     this.layer = layer; // Identifica a camada (1 - K, 2 - L, etc.)
     this.planeNormal = new THREE.Vector3(
       normalVector.x,
@@ -18,17 +18,11 @@ export default class ValenceShell {
     // Calcula os vetores ortogonais
     this.calculateOrthogonalVectors();
 
-    this.ring;
-
-    console.log(
-      `Normal do plano: ${this.planeNormal.x}, ${this.planeNormal.y}, ${this.planeNormal.z}`
-    );
-    console.log(
-      `Vetor ortogonal 1: ${this.orthogonalVector1.x}, ${this.orthogonalVector1.y}, ${this.orthogonalVector1.z}`
-    );
-    console.log(
-      `Vetor ortogonal 2: ${this.orthogonalVector2.x}, ${this.orthogonalVector2.y}, ${this.orthogonalVector2.z}`
-    );
+    this.ring; // Anel da camada
+ 
+    console.log(`Normal do plano: ${this.planeNormal.x}, ${this.planeNormal.y}, ${this.planeNormal.z}`);
+    console.log(`Vetor ortogonal 1: ${this.orthogonalVector1.x}, ${this.orthogonalVector1.y}, ${this.orthogonalVector1.z}`);
+    console.log(`Vetor ortogonal 2: ${this.orthogonalVector2.x}, ${this.orthogonalVector2.y}, ${this.orthogonalVector2.z}`);
   }
 
   calculateOrthogonalVectors() {

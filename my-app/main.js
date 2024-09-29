@@ -14,7 +14,6 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
-
 controls.enableDamping = true; // Suaviza a movimentação
 controls.dampingFactor = 0.25; // Fator de suavização
 controls.enableZoom = true; // Habilita o zoom
@@ -31,7 +30,6 @@ const scene = new THREE.Scene();
 
 // Adicionando luz ambiente
 const light = new THREE.AmbientLight(0xffffff, 2);
-
 scene.add(light);
 
 const normalVector1 = { x: 1, y: 0.5, z: 0 }; // Vetor normal arbitrário

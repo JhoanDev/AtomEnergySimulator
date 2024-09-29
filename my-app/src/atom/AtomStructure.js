@@ -1,32 +1,31 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
-const speed = 0.1;
-let theta = 0.1;
-
 export default class AtomStructure {
   constructor(scene, type, core, radius = 0.35) {
-    this.scene = scene;
+    this.scene = scene; //cena principal
     this.model = null;
-    this.type = type;
-    this.core = core;
-    this.radius = radius;
-    this.fixed = false;
-    this.position = new THREE.Vector3(); // Armazenar a posição antes do carregamento
+    this.type = type; //tipo de partícula (próton, nêutron)
+    this.core = core; //núcleo
+    this.radius = radius; //raio da partícula
+    this.fixed = false; //se a partícula está fixa ou não
+    this.position = new THREE.Vector3(); // Posição 
     this.velocity = new THREE.Vector3(0, 0, 0); // Velocidade inicial
-    this.load(this);
+    this.load(this); // Carrega o modelo
   }
 
+  // Método para carregar o modelo da partícula
   load(object) {
     const loader = new GLTFLoader();
     loader.load(`src/models/${this.type}.gltf`, (gltf) => {
       object.model = gltf.scene.children[0];
-      object.model.scale.set(this.radius, this.radius, this.radius);
+      object.model.scale.set(this.radius, this.radius, this.radius); // Escala
       object.model.position.copy(this.position); // Aplicar a posição após o carregamento
-      this.scene.add(object.model);
+      this.scene.add(object.model); // Adiciona o modelo à cena
     });
   }
 
+  // Método para definir a posição da partícula
   setPosition(position) {
     this.position.copy(position); // Armazena a posição
     if (this.model) {
@@ -35,12 +34,6 @@ export default class AtomStructure {
     }
   }
 
-  rotate() {
-    if (this.model) {
-      this.model.rotation.x += 0.01;
-      this.model.rotation.y += 0.01;
-    }
-  }
 
   // Método para aplicar a gravidade
   applyGravity() {
@@ -54,16 +47,16 @@ export default class AtomStructure {
       if (this.model) {
         this.model.position.set(this.position); // Atualiza a posição do model
       }
-      this.checkCollision();
+      this.checkCollision(); // Verifica colisão
     }
   }
 
+  // Método para verificar colisão
   checkCollision() {
     for (const atom of this.core.atoms) {
-      if (atom !== this) {
-        const distance = this.position.distanceTo(atom.position);
+      if (atom !== this) { // Evita a comparação com a própria partícula
+        const distance = this.position.distanceTo(atom.position); // Distância entre as partículas
         if (distance < this.core.minDistance) {
-          // Colisão detectada
           this.fixed = true; // Fixa a partícula
           this.velocity.set(0, 0, 0); // Zera a velocidade
         }
@@ -71,10 +64,11 @@ export default class AtomStructure {
     }
   }
 
+  // Método para rotacionar a partícula
   rotate() {
     if (this.model) {
-      this.model.rotation.x += 0.01;
-      this.model.rotation.y += 0.01;
+      this.model.rotation.x += 0.01; // Rotação em x
+      this.model.rotation.y += 0.01; // Rotação em y
     }
   }
 }
