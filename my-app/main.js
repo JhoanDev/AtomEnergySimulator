@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import Core from "./src/atom/Core";
 import ValenceShell from "./src/atom/ValenceShell";
+import Core from "./src/atom/Core";
 
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -37,19 +37,6 @@ scene.add(light);
 const normalVector1 = { x: 1, y: 0.5, z: 0 }; // Vetor normal arbitrário
 const normalVector2 = { x: 0, y: 0.5, z: 1 }; // Vetor normal arbitrário
 
-const neutrons = [
-  new Core(scene, "neutron"),
-  new Core(scene, "neutron"),
-  new Core(scene, "neutron"),
-  new Core(scene, "neutron"),
-];
-
-const protons = [
-  new Core(scene, "proton"),
-  new Core(scene, "proton"),
-  new Core(scene, "proton"),
-];
-
 const valenceShells = [
   new ValenceShell(scene, 1, normalVector1),
   new ValenceShell(scene, 2, normalVector2),
@@ -59,26 +46,16 @@ for (let shell of valenceShells) {
   shell.addToScene(scene);
 }
 
+const core = new Core(scene, 3, 4);
+
 function animate() {
   controls.update();
-
-  protons.forEach((proton) => {
-    proton.rotate();
-  });
-
-  neutrons.forEach((neutron) => {
-    neutron.rotate();
-  });
-
-  neutrons[0].move("y", 0);
-  neutrons[1].move("x", -2);
-  neutrons[2].move("y", -2);
-  neutrons[3].move("z", -2);
-
-  protons[0].move("x", 2);
-  protons[1].move("y", 2);
-  protons[2].move("z", 2);
-
+  if (!core.allAtomsIsFixed) {
+    core.allAtomsFixed();
+    for (const atom of core.atoms) {
+      atom.applyGravity();
+    }
+  }
   renderer.render(scene, camera);
 }
 

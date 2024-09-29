@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 export default class ValenceShell {
   constructor(scene, layer, normalVector) {
@@ -58,23 +57,6 @@ export default class ValenceShell {
     // assim os 3 vetores são ortogonais entre si
   }
 
-  addElectron(radius) {
-    const loader = new GLTFLoader();
-
-    loader.load("src/models/electron.gltf", (gltf) => {
-      const electron = gltf.scene;
-
-      electron.position.set(3.2215759457207622, 0, 2.3709593893513605);
-
-      // Aplicando a mesma rotação
-      this.ring.lookAt(this.planeNormal);
-      this.ring.rotateOnAxis(this.orthogonalVector1, Math.PI / 2);
-      this.ring.rotateOnAxis(this.orthogonalVector2, Math.PI / 2);
-
-      this.scene.add(electron);
-    });
-  }
-
   // Método para adicionar o plano à cena
   addToScene() {
     const radius = 4 + (this.layer - 1) * 1.5; // Define o raio do anel com base na camada de valência
@@ -104,6 +86,5 @@ export default class ValenceShell {
     this.ring.rotateOnAxis(this.orthogonalVector2, Math.PI / 2); //rotação ao longo do segundo vetor ortogonal
 
     this.scene.add(this.ring);
-    this.addElectron(radius);
   }
 }
