@@ -124,17 +124,22 @@ export default class ValenceShell {
     for (let i = 0; i < this.quantidadeEletrons; i++) {
       console.log(`Adicionando elétron ${i + 1}`);
       const angle = (2 * Math.PI * i) / this.quantidadeEletrons; // Calcula o ângulo
-      const position = new THREE.Vector3(0, 0, 0); // Posição inicial
-      position.x = this.radius * Math.cos(angle) * this.orthogonalVector1.x + this.radius * Math.sin(angle) * this.orthogonalVector2.x;
-      position.y = this.radius * Math.cos(angle) * this.orthogonalVector1.y + this.radius * Math.sin(angle) * this.orthogonalVector2.y;
-      position.z = this.radius * Math.cos(angle) * this.orthogonalVector1.z + this.radius * Math.sin(angle) * this.orthogonalVector2.z;
-      console.log('position', position);
       const electron = new Electron(this.scene, this);
       this.eletrons.push(electron);
-      electron.setPosition(position);
+      electron.angle = angle;
     }
   }
 
+  rotacionarEletrons() {
+    for (const electron of this.eletrons) {
+      electron.angle += 0.05;
+      const position = new THREE.Vector3(0, 0, 0); // Posição inicial
+      position.x = this.radius * Math.cos(electron.angle) * this.orthogonalVector1.x + this.radius * Math.sin(electron.angle) * this.orthogonalVector2.x;
+      position.y = this.radius * Math.cos(electron.angle) * this.orthogonalVector1.y + this.radius * Math.sin(electron.angle) * this.orthogonalVector2.y;
+      position.z = this.radius * Math.cos(electron.angle) * this.orthogonalVector1.z + this.radius * Math.sin(electron.angle) * this.orthogonalVector2.z;
+      electron.setPosition(position);
+    }
+  }
 
 
 }
