@@ -17,19 +17,44 @@ export default class ValenceShell {
     // inicialiazando os Vetores ortogonais para calcular eles abaixo
     this.orthogonalVector1 = new THREE.Vector3();
     this.orthogonalVector2 = new THREE.Vector3();
-
     // Calcula os vetores ortogonais
     this.calculateOrthogonalVectors();
-    this.radius = 2 + (this.layer - 1) * 1.2; // Define o raio do anel com base na camada de valência
-    this.ring; // Anel da camada
 
-    console.log(`Normal do plano: ${this.planeNormal.x}, ${this.planeNormal.y}, ${this.planeNormal.z}`);
-    console.log(`Vetor ortogonal 1: ${this.orthogonalVector1.x}, ${this.orthogonalVector1.y}, ${this.orthogonalVector1.z}`);
-    console.log(`Vetor ortogonal 2: ${this.orthogonalVector2.x}, ${this.orthogonalVector2.y}, ${this.orthogonalVector2.z}`);
+    this.radius = 2 + (this.layer - 1) * 1.2; // Define o raio do anel com base na camada de valência
+    this.centroDoAnel = new THREE.Vector3(0, 0, 0); // Posição do centro do anel
+
+    //equação do plano
+    this.A = 0;
+    this.B = 0;
+    this.C = 0;
+    this.D = 0;
+    this.calculateEquation();
+
     this.addToScene(); // Adiciona o anel à cena
     this.eletrons = [];
     this.addElectrons(); // Adiciona os elétrons à camada
   }
+
+  calculateEquation() {
+    // Define um ponto qualquer no plano
+    const pontoDoPlanoQualquer = new THREE.Vector3(0, 0, 0);
+
+    // Coeficientes para os vetores ortogonais
+    const a = 1;
+    const b = 1;
+
+    // Calcule um novo ponto no plano como combinação linear dos vetores ortogonais
+    const ponto = this.orthogonalVector1.clone().multiplyScalar(a).add(this.orthogonalVector2.clone().multiplyScalar(b));
+
+    // Obtenha a normal do plano
+    this.A = this.planeNormal.x;
+    this.B = this.planeNormal.y;
+    this.C = this.planeNormal.z;
+
+    // Calcule D usando o ponto que foi calculado
+    this.D = - (this.A * ponto.x + this.B * ponto.y + this.C * ponto.z);
+  }
+
 
   // Método para calcular os vetores ortogonais
   calculateOrthogonalVectors() {
@@ -60,7 +85,7 @@ export default class ValenceShell {
 
   // Método para adicionar o plano à cena
   addToScene() {
-    const tubeRadius = 0.07; // Raio da "espessura" da anel
+    const tubeRadius = 0.07; // Raio da "espessura" do anel
     const radialSegments = 30; // Segmentos ao redor do raio maior
     const tubularSegments = 16; // Segmentos ao longo da espessura do tubo
 
@@ -71,20 +96,24 @@ export default class ValenceShell {
       tubularSegments,
       radialSegments
     );
+
     const material = new THREE.MeshBasicMaterial({
       color: 0x22ff99,
-      side: THREE.DoubleSide,
-    }); // Material do anel
+      side: THREE.DoubleSide, // Material que aparece dos dois lados do anel
+    });
 
     this.ring = new THREE.Mesh(geometry, material); // Cria o mesh do anel
 
-    // O plano deve ser definido pelos vetores ortogonais, então usaremos esses vetores para orientar o plano
-    this.ring.lookAt(this.planeNormal); // A face será perpendicular ao vetor normal
+    // Equação do plano: Ax + By + Cz + D = 0
 
-    // Rotaciona o plano para alinhar com os vetores ortogonais
-    this.ring.rotateOnAxis(this.orthogonalVector1, Math.PI / 2); //rotação ao longo do primeiro vetor ortogonal
-    this.ring.rotateOnAxis(this.orthogonalVector2, Math.PI / 2); //rotação ao longo do segundo vetor ortogonal
+    // O método lookAt orienta a face do anel para ficar perpendicular ao vetor normal do plano
+    this.ring.lookAt(this.planeNormal);
 
+    // Calcular a distância do plano até a origem usando D, ajustando a posição do anel
+    const distanceToOrigin = -this.D / this.planeNormal.length(); // D dividido pela magnitude do vetor normal
+    this.ring.position.copy(this.planeNormal.normalize().multiplyScalar(distanceToOrigin));
+
+    // Adiciona o anel à cena
     this.scene.add(this.ring);
   }
 
@@ -94,26 +123,15 @@ export default class ValenceShell {
 
     for (let i = 0; i < this.quantidadeEletrons; i++) {
       console.log(`Adicionando elétron ${i + 1}`);
-      const angle = (i * Math.PI * 2) / this.quantidadeEletrons;
+      const angle = (2 * Math.PI * i) / this.quantidadeEletrons; // Calcula o ângulo
+      const position = new THREE.Vector3(0, 0, 0); // Posição inicial
+      position.x = this.radius * Math.cos(angle) * this.orthogonalVector1.x + this.radius * Math.sin(angle) * this.orthogonalVector2.x;
+      position.y = this.radius * Math.cos(angle) * this.orthogonalVector1.y + this.radius * Math.sin(angle) * this.orthogonalVector2.y;
+      position.z = this.radius * Math.cos(angle) * this.orthogonalVector1.z + this.radius * Math.sin(angle) * this.orthogonalVector2.z;
+      console.log('position', position);
       const electron = new Electron(this.scene, this);
-      electron.angle = angle; // Armazena o ângulo
       this.eletrons.push(electron);
-
-      const a = this.radius * Math.cos(angle);
-      const b = this.radius * Math.sin(angle);
-
-      // Clone os vetores antes de multiplicá-los
-      let vetor = new THREE.Vector3(0, 0, 0);
-      vetor = this.orthogonalVector1.clone().multiplyScalar(a).add(this.orthogonalVector2.clone().multiplyScalar(b));
-
-      // Adiciona a posição do anel
-      vetor.add(this.ring.position); // Posiciona em relação ao centro do anel  
-
-      // Rotaciona o vetor ao longo dos vetores ortogonais
-      vetor.applyAxisAngle(this.orthogonalVector1, Math.PI / 2); // rotação ao longo do primeiro vetor ortogonal
-      vetor.applyAxisAngle(this.orthogonalVector2, Math.PI / 2); // rotação ao longo do segundo vetor ortogonal
-
-      electron.setPosition(vetor);
+      electron.setPosition(position);
     }
   }
 
