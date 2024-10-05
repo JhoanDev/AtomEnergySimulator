@@ -91,6 +91,7 @@ export default class ValenceShell {
   addElectrons() {
     console.log(`Adicionando elétrons na camada ${this.layer}`);
     console.log('ring position', this.ring.position);
+
     for (let i = 0; i < this.quantidadeEletrons; i++) {
       console.log(`Adicionando elétron ${i + 1}`);
       const angle = (i * Math.PI * 2) / this.quantidadeEletrons;
@@ -98,14 +99,24 @@ export default class ValenceShell {
       electron.angle = angle; // Armazena o ângulo
       this.eletrons.push(electron);
 
-      const x = (this.radius * Math.cos(angle)) 
-      const y = (this.radius * Math.sin(angle))
-      const z = 0;
-      const position = new THREE.Vector3(x, y, z);
-    
-      electron.setPosition(position);
+      const a = this.radius * Math.cos(angle);
+      const b = this.radius * Math.sin(angle);
+
+      // Clone os vetores antes de multiplicá-los
+      let vetor = new THREE.Vector3(0, 0, 0);
+      vetor = this.orthogonalVector1.clone().multiplyScalar(a).add(this.orthogonalVector2.clone().multiplyScalar(b));
+
+      // Adiciona a posição do anel
+      vetor.add(this.ring.position); // Posiciona em relação ao centro do anel  
+
+      // Rotaciona o vetor ao longo dos vetores ortogonais
+      vetor.applyAxisAngle(this.orthogonalVector1, Math.PI / 2); // rotação ao longo do primeiro vetor ortogonal
+      vetor.applyAxisAngle(this.orthogonalVector2, Math.PI / 2); // rotação ao longo do segundo vetor ortogonal
+
+      electron.setPosition(vetor);
     }
-  } 
+  }
+
 
 
 }
