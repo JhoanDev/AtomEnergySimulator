@@ -51,6 +51,9 @@ function animate() {
       atom.applyGravity();
     }
   }
+  for (const valenceShell of valenceShells) {
+    valenceShell.rotacionarEletrons();
+  }
   renderer.render(scene, camera);
 }
 

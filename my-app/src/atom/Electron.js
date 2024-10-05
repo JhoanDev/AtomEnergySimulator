@@ -9,6 +9,7 @@ export default class Electron{
         this.radius = radius; //raio da partícula
         this.position = new THREE.Vector3(); // Posição 
         this.load(this); // Carrega o modelo
+        this.angle = 0;
     }}
 
     // Método para carregar o modelo da partícula
@@ -24,9 +25,8 @@ export default class Electron{
 
     // Método para definir a posição da partícula
     setPosition(position) {
-        this.position.copy(position); // Armazena a posição
+        this.position.copy(position);
         if (this.model) {
-            // Se o modelo já estiver carregado, aplicamos diretamente a posição
             this.model.position.copy(position);
         }
     }
