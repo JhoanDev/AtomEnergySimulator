@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import Electron from "./Electron";
-import { cos } from "three/webgpu";
 
 export default class ValenceShell {
   constructor(scene, layer, normalVector, quantidadeEletrons) {
