@@ -34,27 +34,89 @@ scene.add(light);
 
 const normalVector1 = { x: 1, y: 0.5, z: 0 }; // Vetor normal arbitrário
 const normalVector2 = { x: 0, y: 1, z: 0 }; // Vetor normal arbitrário
+let vector = {
+  x: getRandomInt(0, 2),
+  y: getRandomInt(1, 5),
+  z: getRandomInt(2, 9),
+}; // Vetor normal arbitrário
+let layer = 1;
 
+let quantInShellOne = 1;
+let quantInShellTwo = 2;
+let count = 0;
+let clickInactive;
+
+let values = [quantInShellOne, quantInShellTwo];
 
 const valenceShells = [
-  new ValenceShell(scene, 1, normalVector1, 2),
-  new ValenceShell(scene, 2, normalVector2, 1),
+  new ValenceShell(scene, layer, normalVector1, quantInShellOne),
+  new ValenceShell(scene, ++layer, normalVector2, quantInShellTwo),
 ];
+
+const numberOfValenceShells = valenceShells.length;
 
 const core = new Core(scene, 3, 4);
 
 function animate() {
   controls.update();
+
   if (!core.allAtomsIsFixed) {
     core.allAtomsFixed();
     for (const atom of core.atoms) {
       atom.applyGravity();
     }
   }
+
   for (const valenceShell of valenceShells) {
-    valenceShell.rotacionarEletrons();
+    valenceShell.rotateElectrons();
   }
+
   renderer.render(scene, camera);
 }
 
 renderer.setAnimationLoop(animate);
+
+window.addEventListener("click", () => {
+  clearInterval(clickInactive);
+  count += 0.5;
+
+  if (Number.isInteger(count)) {
+    valenceShells.push(new ValenceShell(scene, ++layer, vector, 0));
+
+    for (let index = 0; index < valenceShells.length; index++) {
+      const element = valenceShells[index];
+
+      element.removeElectron();
+
+      if (index != 0) {
+        element.electronsQuantity = values[index - 1];
+        element.addElectrons();
+      }
+    }
+  }
+
+  clickInactive = setInterval(() => {
+    if (count != 0) count -= 0.5;
+    else if (count === 0 && valenceShells.length != numberOfValenceShells) {
+      valenceShells.map((valenceShell, key) => {
+        valenceShell.removeElectron();
+        valenceShell.electronsQuantity = values[key];
+        valenceShell.addElectrons();
+      });
+
+      do {
+        valenceShells[valenceShells.length - 1].removeValenceShell();
+        valenceShells.pop();
+      } while (valenceShells.length > numberOfValenceShells);
+
+      clearInterval(clickInactive);
+    }
+  }, 1000);
+});
+
+function getRandomInt(min, max) {
+  const minCeiled = Math.ceil(min);
+  const maxFloored = Math.floor(max);
+
+  return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive
+}

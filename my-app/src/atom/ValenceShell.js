@@ -2,10 +2,10 @@ import * as THREE from "three";
 import Electron from "./Electron";
 
 export default class ValenceShell {
-  constructor(scene, layer, normalVector, quantidadeEletrons) {
+  constructor(scene, layer, normalVector, electronsQuantity) {
     this.scene = scene; // Cena principal
     this.layer = layer; // Identifica a camada (1 - K, 2 - L, etc.)
-    this.quantidadeEletrons = quantidadeEletrons; // Quantidade de elétrons na camada
+    this.electronsQuantity = electronsQuantity; // Quantidade de elétrons na camada
     this.planeNormal = new THREE.Vector3(
       normalVector.x,
       normalVector.y,
@@ -20,7 +20,7 @@ export default class ValenceShell {
     this.calculateOrthogonalVectors();
 
     this.radius = 2 + (this.layer - 1) * 1.2; // Define o raio do anel com base na camada de valência
-    this.centroDoAnel = new THREE.Vector3(0, 0, 0); // Posição do centro do anel
+    this.middleOfRing = new THREE.Vector3(0, 0, 0); // Posição do centro do anel
 
     //equação do plano
     this.A = 0;
@@ -35,15 +35,15 @@ export default class ValenceShell {
   }
 
   calculateEquation() {
-    // Define um ponto qualquer no plano
-    const pontoDoPlanoQualquer = new THREE.Vector3(0, 0, 0);
-
     // Coeficientes para os vetores ortogonais
     const a = 1;
     const b = 1;
 
     // Calcule um novo ponto no plano como combinação linear dos vetores ortogonais
-    const ponto = this.orthogonalVector1.clone().multiplyScalar(a).add(this.orthogonalVector2.clone().multiplyScalar(b));
+    const ponto = this.orthogonalVector1
+      .clone()
+      .multiplyScalar(a)
+      .add(this.orthogonalVector2.clone().multiplyScalar(b));
 
     // Obtenha a normal do plano
     this.A = this.planeNormal.x;
@@ -51,14 +51,13 @@ export default class ValenceShell {
     this.C = this.planeNormal.z;
 
     // Calcule D usando o ponto que foi calculado
-    this.D = - (this.A * ponto.x + this.B * ponto.y + this.C * ponto.z);
+    this.D = -(this.A * ponto.x + this.B * ponto.y + this.C * ponto.z);
   }
-
 
   // Método para calcular os vetores ortogonais
   calculateOrthogonalVectors() {
     // Vetor arbitrário para o produto vetorial
-    let arbitraryVector = new THREE.Vector3(1, 0, 0);
+    const arbitraryVector = new THREE.Vector3(1, 0, 0);
 
     // Se o vetor normal estiver mais próximo do eixo X, usamos o eixo Y como vetor arbitrário
     // evitando que o produto vetorial seja zero e o plano não seja definido
@@ -110,35 +109,49 @@ export default class ValenceShell {
 
     // Calcular a distância do plano até a origem usando D, ajustando a posição do anel
     const distanceToOrigin = -this.D / this.planeNormal.length(); // D dividido pela magnitude do vetor normal
-    this.ring.position.copy(this.planeNormal.normalize().multiplyScalar(distanceToOrigin));
+    this.ring.position.copy(
+      this.planeNormal.normalize().multiplyScalar(distanceToOrigin)
+    );
 
     // Adiciona o anel à cena
     this.scene.add(this.ring);
   }
 
   addElectrons() {
-    console.log(`Adicionando elétrons na camada ${this.layer}`);
-    console.log('ring position', this.ring.position);
-
-    for (let i = 0; i < this.quantidadeEletrons; i++) {
-      console.log(`Adicionando elétron ${i + 1}`);
-      const angle = (2 * Math.PI * i) / this.quantidadeEletrons; // Calcula o ângulo
+    for (let i = 0; i < this.electronsQuantity; i++) {
+      const angle = (2 * Math.PI * i) / this.electronsQuantity; // Calcula o ângulo
       const electron = new Electron(this.scene, this);
       this.eletrons.push(electron);
       electron.angle = angle;
     }
   }
 
-  rotacionarEletrons() {
+  rotateElectrons() {
     for (const electron of this.eletrons) {
       electron.angle += 0.05;
       const position = new THREE.Vector3(0, 0, 0); // Posição inicial
-      position.x = this.radius * Math.cos(electron.angle) * this.orthogonalVector1.x + this.radius * Math.sin(electron.angle) * this.orthogonalVector2.x;
-      position.y = this.radius * Math.cos(electron.angle) * this.orthogonalVector1.y + this.radius * Math.sin(electron.angle) * this.orthogonalVector2.y;
-      position.z = this.radius * Math.cos(electron.angle) * this.orthogonalVector1.z + this.radius * Math.sin(electron.angle) * this.orthogonalVector2.z;
+      position.x =
+        this.radius * Math.cos(electron.angle) * this.orthogonalVector1.x +
+        this.radius * Math.sin(electron.angle) * this.orthogonalVector2.x;
+      position.y =
+        this.radius * Math.cos(electron.angle) * this.orthogonalVector1.y +
+        this.radius * Math.sin(electron.angle) * this.orthogonalVector2.y;
+      position.z =
+        this.radius * Math.cos(electron.angle) * this.orthogonalVector1.z +
+        this.radius * Math.sin(electron.angle) * this.orthogonalVector2.z;
       electron.setPosition(position);
     }
   }
 
+  removeElectron() {
+    for (const electron of this.eletrons) {
+      electron.remove();
+    }
+  }
 
+  removeValenceShell() {
+    if (this.ring) {
+      this.scene.remove(this.ring);
+    }
+  }
 }
