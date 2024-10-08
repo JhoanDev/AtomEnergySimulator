@@ -36,8 +36,8 @@ const normalVector1 = { x: 1, y: 0.5, z: 0 }; // Vetor normal arbitrário
 const normalVector2 = { x: 0, y: 1, z: 0 }; // Vetor normal arbitrário
 let vector = {
   x: getRandomInt(0, 2),
-  y: getRandomInt(1, 5),
-  z: getRandomInt(2, 9),
+  y: getRandomInt(1, 2),
+  z: getRandomInt(2, 3),
 }; // Vetor normal arbitrário
 let layer = 1;
 

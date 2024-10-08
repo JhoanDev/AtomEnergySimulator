@@ -15,10 +15,29 @@
 	"nodes":[
 		{
 			"mesh":0,
-			"name":"Sphere"
+			"name":"Text",
+			"rotation":[
+				0.7071068286895752,
+				0,
+				0,
+				0.7071068286895752
+			],
+			"translation":[
+				-0.01803397387266159,
+				0.000509016215801239,
+				0.0073680877685546875
+			]
 		}
 	],
 	"materials":[
+		{
+			"doubleSided":true,
+			"name":"Material.002",
+			"pbrMetallicRoughness":{
+				"metallicFactor":0,
+				"roughnessFactor":0.5
+			}
+		},
 		{
 			"doubleSided":true,
 			"name":"Material.001",
@@ -36,7 +55,7 @@
 	],
 	"meshes":[
 		{
-			"name":"Sphere",
+			"name":"Text",
 			"primitives":[
 				{
 					"attributes":{
@@ -46,6 +65,15 @@
 					},
 					"indices":3,
 					"material":0
+				},
+				{
+					"attributes":{
+						"POSITION":4,
+						"NORMAL":5,
+						"TEXCOORD_0":6
+					},
+					"indices":7,
+					"material":1
 				}
 			]
 		}
@@ -54,33 +82,67 @@
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":559,
+			"count":4,
 			"max":[
-				0.9999997019767761,
-				1,
-				0.9999993443489075
+				0.2610340118408203,
+				1.0296207666397095,
+				0.02185644954442978
 			],
 			"min":[
-				-0.9999990463256836,
-				-1,
-				-1
+				-0.22496601939201355,
+				1.0296207666397095,
+				-0.16414356231689453
 			],
 			"type":"VEC3"
 		},
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":559,
+			"count":4,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":2,
 			"componentType":5126,
-			"count":559,
+			"count":4,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":3,
+			"componentType":5123,
+			"count":6,
+			"type":"SCALAR"
+		},
+		{
+			"bufferView":4,
+			"componentType":5126,
+			"count":559,
+			"max":[
+				1.018033742904663,
+				0.9926312565803528,
+				1.0005090236663818
+			],
+			"min":[
+				-0.9819650650024414,
+				-1.0073679685592651,
+				-0.9994909763336182
+			],
+			"type":"VEC3"
+		},
+		{
+			"bufferView":5,
+			"componentType":5126,
+			"count":559,
+			"type":"VEC3"
+		},
+		{
+			"bufferView":6,
+			"componentType":5126,
+			"count":559,
+			"type":"VEC2"
+		},
+		{
+			"bufferView":7,
 			"componentType":5123,
 			"count":2880,
 			"type":"SCALAR"
@@ -89,32 +151,56 @@
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":6708,
+			"byteLength":48,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
+			"byteLength":48,
+			"byteOffset":48,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":32,
+			"byteOffset":96,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":12,
+			"byteOffset":128,
+			"target":34963
+		},
+		{
+			"buffer":0,
 			"byteLength":6708,
-			"byteOffset":6708,
+			"byteOffset":140,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":6708,
+			"byteOffset":6848,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":4472,
-			"byteOffset":13416,
+			"byteOffset":13556,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":5760,
-			"byteOffset":17888,
+			"byteOffset":18028,
 			"target":34963
 		}
 	],
 	"buffers":[
 		{
-			"byteLength":23648,
+			"byteLength":23788,
 			"uri":"electron.bin"
 		}
 	]
