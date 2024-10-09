@@ -128,7 +128,7 @@ export default class ValenceShell {
 
   rotateElectrons() {
     for (const electron of this.eletrons) {
-      electron.angle += 0.05;
+      electron.angle += 0.03;
       const position = new THREE.Vector3(0, 0, 0); // Posição inicial
       position.x =
         this.radius * Math.cos(electron.angle) * this.orthogonalVector1.x +

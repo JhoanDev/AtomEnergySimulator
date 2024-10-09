@@ -32,13 +32,11 @@ const scene = new THREE.Scene();
 const light = new THREE.AmbientLight(0xffffff, 2);
 scene.add(light);
 
-const normalVector1 = { x: 1, y: 0.5, z: 0 }; // Vetor normal arbitrário
-const normalVector2 = { x: 0, y: 1, z: 0 }; // Vetor normal arbitrário
-let vector = {
-  x: getRandomInt(0, 2),
-  y: getRandomInt(1, 2),
-  z: getRandomInt(2, 3),
-}; // Vetor normal arbitrário
+// let vector = {
+//   x: getRandomInt(0, 2),
+//   y: getRandomInt(1, 2),
+//   z: getRandomInt(2, 3),
+// }; // Vetor normal arbitrário
 let layer = 1;
 
 let quantInShellOne = 1;
@@ -49,8 +47,8 @@ let clickInactive;
 let values = [quantInShellOne, quantInShellTwo];
 
 const valenceShells = [
-  new ValenceShell(scene, layer, normalVector1, quantInShellOne),
-  new ValenceShell(scene, ++layer, normalVector2, quantInShellTwo),
+  new ValenceShell(scene, layer, getNomalVector(), quantInShellOne),
+  new ValenceShell(scene, ++layer, getNomalVector(), quantInShellTwo),
 ];
 
 const numberOfValenceShells = valenceShells.length;
@@ -71,25 +69,34 @@ function animate() {
     valenceShell.rotateElectrons();
   }
 
+  for (const valenceShell of valenceShells) {
+    valenceShell.eletrons.forEach((element) => {
+      element.rotate();
+    });
+  }
+
   renderer.render(scene, camera);
 }
 
 renderer.setAnimationLoop(animate);
+
+let n;
 
 window.addEventListener("click", () => {
   clearInterval(clickInactive);
   count += 0.5;
 
   if (Number.isInteger(count)) {
-    valenceShells.push(new ValenceShell(scene, ++layer, vector, 0));
+    valenceShells.push(new ValenceShell(scene, ++layer, getNomalVector(), 0));
+    n = valenceShells.length;
 
-    for (let index = 0; index < valenceShells.length; index++) {
+    for (let index = 0; index < n; index++) {
       const element = valenceShells[index];
 
       element.removeElectron();
 
       if (index != 0) {
-        element.electronsQuantity = values[index - 1];
+        element.electronsQuantity = values[index - (n - values.length)];
         element.addElectrons();
       }
     }
@@ -107,6 +114,7 @@ window.addEventListener("click", () => {
       do {
         valenceShells[valenceShells.length - 1].removeValenceShell();
         valenceShells.pop();
+        --layer;
       } while (valenceShells.length > numberOfValenceShells);
 
       clearInterval(clickInactive);
@@ -114,9 +122,10 @@ window.addEventListener("click", () => {
   }, 1000);
 });
 
-function getRandomInt(min, max) {
-  const minCeiled = Math.ceil(min);
-  const maxFloored = Math.floor(max);
-
-  return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive
+function getNomalVector() {
+  return {
+    x: Math.random(),
+    y: Math.random(),
+    z: Math.random(),
+  }; // Vetor normal arbitrário
 }

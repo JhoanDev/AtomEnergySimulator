@@ -38,4 +38,11 @@ export default class Electron {
       this.scene.remove(this.model);
     }
   }
+
+  rotate() {
+    if (this.model) {
+      this.model.rotation.x += 0.1; // Rotação em x
+      this.model.rotation.y += 0.1; // Rotação em y
+    }
+  }
 }
