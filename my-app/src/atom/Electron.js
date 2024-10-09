@@ -11,6 +11,7 @@ export default class Electron {
       this.position = new THREE.Vector3(); // Posição
       this.load(this); // Carrega o modelo
       this.angle = 0;
+      this.raioDeOrbita = 0;
     }
   }
 

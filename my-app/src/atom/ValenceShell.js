@@ -130,15 +130,16 @@ export default class ValenceShell {
     for (const electron of this.eletrons) {
       electron.angle += 0.03;
       const position = new THREE.Vector3(0, 0, 0); // Posição inicial
+      electron.raioDeOrbita = 0.99*electron.raioDeOrbita + 0.01*this.radius;
       position.x =
-        this.radius * Math.cos(electron.angle) * this.orthogonalVector1.x +
-        this.radius * Math.sin(electron.angle) * this.orthogonalVector2.x;
+        electron.raioDeOrbita * Math.cos(electron.angle) * this.orthogonalVector1.x +
+        electron.raioDeOrbita * Math.sin(electron.angle) * this.orthogonalVector2.x;
       position.y =
-        this.radius * Math.cos(electron.angle) * this.orthogonalVector1.y +
-        this.radius * Math.sin(electron.angle) * this.orthogonalVector2.y;
+        electron.raioDeOrbita * Math.cos(electron.angle) * this.orthogonalVector1.y +
+        electron.raioDeOrbita * Math.sin(electron.angle) * this.orthogonalVector2.y;
       position.z =
-        this.radius * Math.cos(electron.angle) * this.orthogonalVector1.z +
-        this.radius * Math.sin(electron.angle) * this.orthogonalVector2.z;
+        electron.raioDeOrbita * Math.cos(electron.angle) * this.orthogonalVector1.z +
+        electron.raioDeOrbita * Math.sin(electron.angle) * this.orthogonalVector2.z;
       electron.setPosition(position);
     }
   }
