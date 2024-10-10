@@ -37,19 +37,30 @@ scene.add(ambientLight);
 
 // Variáveis do Sistema
 let layer = 1;
-const values = [1, 2]; // Quantidade de elétrons em cada camada de valência
+const values = [1, 2]; // Quantidade de elétrons em cada camada de valência padrão
 let count = 0;
 let clickInactive;
 const valenceShells = [];
 let numberOfValenceShells;
+let numberOfValenceShellsAux = 0;
+const normalVectors = [
+  getRandomVector(),
+  getRandomVector(),
+  getRandomVector(),
+  getRandomVector(),
+  getRandomVector(),
+  getRandomVector(),
+  getRandomVector(),
+];
 
 // Criação das Camadas de Valência
 function createValenceShells() {
   values.forEach((quantity, i) => {
-    const shell = new ValenceShell(scene, layer + i, getRandomVector(), quantity);
+    const shell = new ValenceShell(scene, layer + i, normalVectors[i], quantity);
     valenceShells.push(shell);
   });
   numberOfValenceShells = valenceShells.length;
+  numberOfValenceShellsAux = numberOfValenceShells;
 }
 
 // Criação do Núcleo
@@ -89,9 +100,9 @@ function removeExtraValenceShells() {
 // Função para Gerar Vetor Normal Aleatório
 function getRandomVector() {
   return {
-    x: Math.random(),
-    y: Math.random(),
-    z: Math.random(),
+    x: Math.random() - 0.5,
+    y: Math.random() - 0.5,
+    z: Math.random() - 0.5,
   };
 }
 
@@ -113,7 +124,8 @@ function handleMouseClick() {
   clearInterval(clickInactive);
   count += 0.5;
 
-  if (Number.isInteger(count)) {
+  if (Number.isInteger(count) && numberOfValenceShellsAux < 7) {
+    numberOfValenceShellsAux++;
     addValenceShell();
   }
 
@@ -127,10 +139,12 @@ function handleMouseClick() {
         shell.addElectrons();
       });
       removeExtraValenceShells();
+      numberOfValenceShellsAux = numberOfValenceShells;
       clearInterval(clickInactive);
     }
   }, 1000);
 }
+
 
 // Inicializando o Sistema
 createValenceShells();
