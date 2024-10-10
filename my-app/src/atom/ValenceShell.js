@@ -123,14 +123,27 @@ export default class ValenceShell {
       const electron = new Electron(this.scene, this);
       this.eletrons.push(electron);
       electron.angle = angle;
+      electron.raioDeOrbita = this.radius - 1.2;
     }
   }
+
+  addElectronsReturn() {
+    for (let i = 0; i < this.electronsQuantity; i++) {
+      const angle = (2 * Math.PI * i) / this.electronsQuantity; // Calcula o ângulo
+      const electron = new Electron(this.scene, this);
+      this.eletrons.push(electron);
+      electron.angle = angle;
+      electron.raioDeOrbita = this.radius + 1.2;
+    }
+  }
+
+
 
   rotateElectrons() {
     for (const electron of this.eletrons) {
       electron.angle += 0.03;
       const position = new THREE.Vector3(0, 0, 0); // Posição inicial
-      electron.raioDeOrbita = 0.99*electron.raioDeOrbita + 0.01*this.radius;
+      electron.raioDeOrbita = 0.98*electron.raioDeOrbita + 0.02*this.radius;
       position.x =
         electron.raioDeOrbita * Math.cos(electron.angle) * this.orthogonalVector1.x +
         electron.raioDeOrbita * Math.sin(electron.angle) * this.orthogonalVector2.x;
@@ -148,6 +161,7 @@ export default class ValenceShell {
     for (const electron of this.eletrons) {
       electron.remove();
     }
+    this.electronsQuantity = 0;
   }
 
   removeValenceShell() {
