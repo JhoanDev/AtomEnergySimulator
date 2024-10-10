@@ -36,9 +36,9 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 2);
 scene.add(ambientLight);
 
 // Variáveis do Sistema
-let layer = 1;
+let layer = 0;
 const values = [1, 2]; // Quantidade de elétrons em cada camada de valência padrão
-let count = 0;
+let energy = 0;
 let clickInactive;
 const valenceShells = [];
 let numberOfValenceShells;
@@ -56,7 +56,7 @@ const normalVectors = [
 // Criação das Camadas de Valência
 function createValenceShells() {
   values.forEach((quantity, i) => {
-    const shell = new ValenceShell(scene, layer + i, normalVectors[i], quantity);
+    const shell = new ValenceShell(scene, ++layer, normalVectors[i], quantity);
     valenceShells.push(shell);
   });
   numberOfValenceShells = valenceShells.length;
@@ -75,17 +75,19 @@ function rotateElectrons() {
 
 // Função para Adicionar Nova Camada de Valência
 function addValenceShell() {
-  const newShell = new ValenceShell(scene, ++layer, getRandomVector(), 0);
+  const newShell = new ValenceShell(scene, ++layer, normalVectors[numberOfValenceShellsAux++], 0);
   valenceShells.push(newShell);
-
-  // Ajuste dos elétrons nas camadas
-  valenceShells.forEach((shell, index) => {
-    shell.removeElectron();
-    if (index < values.length) {
-      shell.electronsQuantity = values[index];
-      shell.addElectrons();
-    }
+  let electrons = [];
+  valenceShells.forEach(shell => {
+    electrons.push(shell.electronsQuantity);
   });
+  for (let i = 0; i < valenceShells.length; i++) {
+    valenceShells[i].removeElectron();
+    if (i > 0) {
+      valenceShells[i].electronsQuantity = electrons[i - 1];
+      valenceShells[i].addElectrons();
+    }
+  }
 }
 
 // Função para Remover Camadas Extras
@@ -100,9 +102,9 @@ function removeExtraValenceShells() {
 // Função para Gerar Vetor Normal Aleatório
 function getRandomVector() {
   return {
-    x: Math.random() - 0.5,
-    y: Math.random() - 0.5,
-    z: Math.random() - 0.5,
+    x: (Math.random() - 0.5) * 2,
+    y: (Math.random() - 0.5) * 2,
+    z: (Math.random() - 0.5) * 2,
   };
 }
 
@@ -122,25 +124,26 @@ function animate() {
 // Função para Gerenciar o Evento de Clique
 function handleMouseClick() {
   clearInterval(clickInactive);
-  count += 0.5;
+  energy += 0.5;
 
-  if (Number.isInteger(count) && numberOfValenceShellsAux < 7) {
-    numberOfValenceShellsAux++;
+  if (energy % 2 == 0 && numberOfValenceShellsAux < 7) {
     addValenceShell();
   }
 
   clickInactive = setInterval(() => {
-    if (count > 0) {
-      count -= 0.5;
+    if (energy > 0) {
+      energy -= 1;
     } else if (valenceShells.length > numberOfValenceShells) {
       valenceShells.forEach((shell, index) => {
         shell.removeElectron();
         shell.electronsQuantity = values[index];
-        shell.addElectrons();
+        shell.addElectronsReturn();
       });
-      removeExtraValenceShells();
       numberOfValenceShellsAux = numberOfValenceShells;
       clearInterval(clickInactive);
+      setInterval(() => {
+        removeExtraValenceShells();
+      }, 5000); 
     }
   }, 1000);
 }
