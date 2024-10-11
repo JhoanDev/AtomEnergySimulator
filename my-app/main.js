@@ -75,10 +75,15 @@ function rotateElectrons() {
 
 // Função para Adicionar Nova Camada de Valência
 function addValenceShell() {
-  const newShell = new ValenceShell(scene, ++layer, normalVectors[numberOfValenceShellsAux++], 0);
+  const newShell = new ValenceShell(
+    scene,
+    ++layer,
+    normalVectors[numberOfValenceShellsAux++],
+    0
+  );
   valenceShells.push(newShell);
   let electrons = [];
-  valenceShells.forEach(shell => {
+  valenceShells.forEach((shell) => {
     electrons.push(shell.electronsQuantity);
   });
   for (let i = 0; i < valenceShells.length; i++) {
@@ -137,17 +142,20 @@ function handleMouseClick() {
       valenceShells.forEach((shell, index) => {
         shell.removeElectron();
         shell.electronsQuantity = values[index];
-        shell.addElectronsReturn();
+        shell.addElectronsReturn();     
       });
       numberOfValenceShellsAux = numberOfValenceShells;
       clearInterval(clickInactive);
-      setInterval(() => {
+      let removeShellsInterval = setInterval(() => {
         removeExtraValenceShells();
-      }, 5000); 
-    }
-  }, 1000);
-}
 
+        if (valenceShells.length <= numberOfValenceShells) {
+          clearInterval(removeShellsInterval);
+        }
+      }, 500);
+    }
+  }, 2000);
+}
 
 // Inicializando o Sistema
 createValenceShells();
