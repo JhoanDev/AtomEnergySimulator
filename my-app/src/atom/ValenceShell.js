@@ -181,8 +181,10 @@ export default class ValenceShell {
   }
 
   lightEmission() {
-    const directionalLight = new THREE.DirectionalLight(0xff0000, 10);
-    directionalLight.position.set(0, 10, 0); // Definir a posição da fonte de luz
+    let intensity = 10;
+
+    const directionalLight = new THREE.DirectionalLight(0xff0000, intensity);
+    directionalLight.position.set(10, 10, 0); // Definir a posição da fonte de luz
     this.scene.add(directionalLight);
 
     const beamGeometry = new THREE.CylinderGeometry(0.1, 0.1, 5, 32);
@@ -216,10 +218,11 @@ export default class ValenceShell {
 
       this.scene.add(beam);
     });
-    this.animateBeams(beams, this.radius);
+
+    this.animateBeams(beams, this.radius, directionalLight, intensity);
   }
 
-  animateBeams(beams, initialRadius) {
+  animateBeams(beams, initialRadius, directionalLight, intensity) {
     let speed = 0.03;
     beams.forEach((beam, index) => {
       const angleStep = (2 * Math.PI) / beams.length; // Ângulo entre cada feixe
@@ -233,9 +236,19 @@ export default class ValenceShell {
       beam.position.set(x, y, 0); // Atualiza a posição no plano XY
     });
 
+    // Decrementa a intensidade se for maior que zero
+    if (intensity > 0) {
+      directionalLight.intensity = intensity -= 0.05;
+    }
+
     // Chamando o próximo quadro de animação
     requestAnimationFrame(() =>
-      this.animateBeams(beams, initialRadius + speed)
+      this.animateBeams(
+        beams,
+        initialRadius + speed,
+        directionalLight,
+        intensity
+      )
     );
   }
 }
