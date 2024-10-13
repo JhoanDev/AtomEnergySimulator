@@ -100,6 +100,7 @@ function removeExtraValenceShells() {
   while (valenceShells.length > numberOfValenceShells) {
     const shell = valenceShells.pop();
     shell.removeValenceShell();
+    shell.lightEmission();
     --layer;
   }
 }
@@ -142,7 +143,7 @@ function handleMouseClick() {
       valenceShells.forEach((shell, index) => {
         shell.removeElectron();
         shell.electronsQuantity = values[index];
-        shell.addElectronsReturn();     
+        shell.addElectronsReturn();
       });
       numberOfValenceShellsAux = numberOfValenceShells;
       clearInterval(clickInactive);

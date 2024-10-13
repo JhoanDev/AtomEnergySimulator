@@ -179,4 +179,63 @@ export default class ValenceShell {
       this.scene.remove(this.ring);
     }
   }
+
+  lightEmission() {
+    const directionalLight = new THREE.DirectionalLight(0xff0000, 10);
+    directionalLight.position.set(0, 10, 0); // Definir a posição da fonte de luz
+    this.scene.add(directionalLight);
+
+    const beamGeometry = new THREE.CylinderGeometry(0.1, 0.1, 5, 32);
+    const beamMaterial = new THREE.MeshBasicMaterial({
+      color: 0xff0000,
+      transparent: true,
+      opacity: 0.5, // Material translúcido
+    });
+
+    const beams = [
+      new THREE.Mesh(beamGeometry, beamMaterial),
+      new THREE.Mesh(beamGeometry, beamMaterial),
+      new THREE.Mesh(beamGeometry, beamMaterial),
+      new THREE.Mesh(beamGeometry, beamMaterial),
+      new THREE.Mesh(beamGeometry, beamMaterial),
+    ];
+
+    // Para distribuir os feixes ao redor do eixo Z em várias direções (plano XY)
+    const angleStep = (2 * Math.PI) / beams.length; // Ângulo entre cada feixe
+
+    beams.forEach((beam, index) => {
+      // Calcular a posição usando coordenadas polares no plano XY
+      const angle = angleStep * index;
+      const radius = this.radius; // Raio da distribuição dos feixes (distância do centro)
+
+      const x = radius * Math.cos(angle);
+      const y = radius * Math.sin(angle);
+
+      beam.position.set(x, y, 0); // Definir a posição no plano XY
+      beam.rotation.z = Math.PI / 2; // Rodar o feixe para apontar na direção correta
+
+      this.scene.add(beam);
+    });
+    this.animateBeams(beams, this.radius);
+  }
+
+  animateBeams(beams, initialRadius) {
+    let speed = 0.03;
+    beams.forEach((beam, index) => {
+      const angleStep = (2 * Math.PI) / beams.length; // Ângulo entre cada feixe
+      const angle = angleStep * index;
+
+      // Atualizar a posição aumentando o raio
+      const newRadius = initialRadius + speed;
+      const x = newRadius * Math.cos(angle);
+      const y = newRadius * Math.sin(angle);
+
+      beam.position.set(x, y, 0); // Atualiza a posição no plano XY
+    });
+
+    // Chamando o próximo quadro de animação
+    requestAnimationFrame(() =>
+      this.animateBeams(beams, initialRadius + speed)
+    );
+  }
 }
