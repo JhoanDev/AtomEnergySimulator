@@ -20,20 +20,37 @@ document.body.appendChild(renderer.domElement);
 
 // Configuração dos Controles
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.25;
-controls.enableZoom = true;
-controls.minDistance = 1;
-controls.maxDistance = 10;
-controls.mouseButtons.RIGHT = null;
-controls.update();
 
 // Configuração da Cena
 const scene = new THREE.Scene();
 
+// Criação do Núcleo
+const core = new Core(scene, 3, 4);
+
 // Luz ambiente
 const ambientLight = new THREE.AmbientLight(0xffffff, 2);
-scene.add(ambientLight);
+
+// Audio
+const listener = new THREE.AudioListener();
+camera.add(listener);
+
+const soundOfLight = new THREE.Audio(listener);
+const soundOfEletric = new THREE.Audio(listener);
+let eletricVol = 0.5;
+
+const soundOfLightLoader = new THREE.AudioLoader();
+const soundOfEletricLoader = new THREE.AudioLoader();
+soundOfLightLoader.load("soundOfLight.mp3", (buffer) => {
+  soundOfLight.setBuffer(buffer);
+  soundOfLight.setLoop(true);
+  soundOfLight.setVolume(2);
+});
+
+soundOfEletricLoader.load("soundOfEletric.mp3", (buffer) => {
+  soundOfEletric.setBuffer(buffer);
+  soundOfEletric.setLoop(true);
+  soundOfEletric.setVolume(0.5);
+});
 
 // Variáveis do Sistema
 let layer = 0;
@@ -53,6 +70,15 @@ const normalVectors = [
   getRandomVector(),
 ];
 
+scene.add(ambientLight);
+controls.enableDamping = true;
+controls.dampingFactor = 0.25;
+controls.enableZoom = true;
+controls.minDistance = 1;
+controls.maxDistance = 10;
+controls.mouseButtons.RIGHT = null;
+controls.update();
+
 // Criação das Camadas de Valência
 function createValenceShells() {
   values.forEach((quantity, i) => {
@@ -62,9 +88,6 @@ function createValenceShells() {
   numberOfValenceShells = valenceShells.length;
   numberOfValenceShellsAux = numberOfValenceShells;
 }
-
-// Criação do Núcleo
-const core = new Core(scene, 3, 4);
 
 // Função para Rotacionar os Elétrons
 function rotateElectrons() {
@@ -134,6 +157,8 @@ function handleMouseClick() {
 
   if (energy % 2 == 0 && numberOfValenceShellsAux < 7) {
     addValenceShell();
+    soundOfEletric.play();
+    soundOfEletric.setVolume(++eletricVol);
   }
 
   clickInactive = setInterval(() => {
@@ -147,11 +172,14 @@ function handleMouseClick() {
       });
       numberOfValenceShellsAux = numberOfValenceShells;
       clearInterval(clickInactive);
+      soundOfLight.play();
       let removeShellsInterval = setInterval(() => {
         removeExtraValenceShells();
 
         if (valenceShells.length <= numberOfValenceShells) {
           clearInterval(removeShellsInterval);
+          soundOfLight.stop(1);
+          soundOfEletric.stop(1);
         }
       }, 500);
     }
