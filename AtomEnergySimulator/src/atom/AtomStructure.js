@@ -17,7 +17,7 @@ export default class AtomStructure {
   // Método para carregar o modelo da partícula
   load(object) {
     const loader = new GLTFLoader();
-    loader.load(`public/models/${this.type}.gltf`, (gltf) => {
+    loader.load(import.meta.env.BASE_URL + `models/${this.type}.gltf`, (gltf) => {
       object.model = gltf.scene.children[0];
       object.model.scale.set(this.radius, this.radius, this.radius); // Escala
       object.model.position.copy(this.position); // Aplicar a posição após o carregamento

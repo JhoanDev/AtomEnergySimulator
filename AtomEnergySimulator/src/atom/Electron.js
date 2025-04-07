@@ -18,7 +18,7 @@ export default class Electron {
   // Método para carregar o modelo da partícula
   load(object) {
     const loader = new GLTFLoader();
-    loader.load(`public/models/electron.gltf`, (gltf) => {
+    loader.load(import.meta.env.BASE_URL + `models/electron.gltf`, (gltf) => {
       object.model = gltf.scene.children[0];
       object.model.scale.set(this.radius, this.radius, this.radius); // Escala
       object.model.position.copy(this.position); // Aplicar a posição após o carregamento

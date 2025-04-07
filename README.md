@@ -7,6 +7,12 @@
   <img src="./AtomEnergySimulator/public/screenshot.png" alt="Prévia da Simulação 3D" width="600"/>
 </p>
 
+<p align="center">
+  <a href="https://jhoandev.github.io/AtomEnergySimulator/" target="_blank">
+    🔗 Acesse a simulação ao vivo
+  </a>
+</p>
+
 # 🧠 Arquitetura das Classes
 
 ## 🧱 `AtomStructure` — Prótons e Nêutrons
